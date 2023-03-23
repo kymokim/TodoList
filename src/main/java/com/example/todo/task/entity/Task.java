@@ -1,65 +1,42 @@
 package com.example.todo.task.entity;
 
-import javax.persistence.*;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 
+import javax.persistence.*;
+import java.time.LocalDateTime;
+
+@Table(name = "task")
 @Entity
+@Getter
+@NoArgsConstructor
 public class Task {
     @Id
     @GeneratedValue(strategy= GenerationType.AUTO)
     private Long id;
 
-    @Column(columnDefinition = "bigint default 1")
-    private Long taskOrder;
+    private LocalDateTime creationDate = LocalDateTime.now();
 
     private String title;
 
     private String content;
 
-    private boolean completed;
+    private boolean isCompleted = false;
 
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public Long getTaskOrder() {
-        return taskOrder;
-    }
-
-    public void setTaskOrder(Long taskOrder) {
-        this.taskOrder = taskOrder;
-    }
-
-    public String getTitle() {
-        return title;
-    }
-
-    public void setTitle(String title) {
+    @Builder
+    public Task(String title, String content){
         this.title = title;
-    }
-
-    public String getContent() {
-        return content;
-    }
-
-    public void setContent(String content) {
         this.content = content;
     }
 
-    public boolean isCompleted() {
-        return completed;
+    public void update(String title, String content){
+        this.title = title;
+        this.content = content;
     }
 
-    public void setCompleted(boolean completed) {
-        this.completed = completed;
+    public void complete(boolean isCompleted){
+        this.isCompleted = isCompleted;
     }
 
-    public void update(Task request) {
-        this.setTitle(request.getTitle());
-        this.setContent(request.getContent());
-        this.setCompleted(request.isCompleted());
-    }
 }

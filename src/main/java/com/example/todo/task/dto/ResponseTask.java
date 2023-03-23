@@ -3,24 +3,50 @@ package com.example.todo.task.dto;
 import com.example.todo.task.entity.Task;
 import lombok.Builder;
 import lombok.Data;
+import lombok.Getter;
 
-@Data
-@Builder
+import java.time.LocalDateTime;
+
 public class ResponseTask {
-    private Long id;
-    private Long taskOrder;
-    private String title;
-    private String content;
-    private boolean completed;
 
-    public ResponseTask(Long id, Long taskOrder, String title, String content, boolean completed) {
-        this.id = id;
-        this.taskOrder = taskOrder;
-        this.title = title;
-        this.content = content;
-        this.completed = completed;
+    @Builder
+    @Getter
+    public static class GetTaskDto{
+//        private Long id;
+        private LocalDateTime creationDate;
+        private String title;
+        private String content;
+        private boolean isCompleted;
+
+        public static GetTaskDto of(Task task){
+            return GetTaskDto.builder()
+//                    .id(task.getId())
+                    .creationDate(task.getCreationDate())
+                    .title(task.getTitle())
+                    .content(task.getContent())
+                    .isCompleted(task.isCompleted())
+                    .build();
+        }
     }
 
+    @Builder
+    @Getter
+    public static class GetAllTaskDto{
+        private Long id;
+        private LocalDateTime creationDate;
+        private String title;
+        private String content;
+        private boolean isCompleted;
 
+        public static GetAllTaskDto of(Task task){
+            return GetAllTaskDto.builder()
+                    .id(task.getId())
+                    .creationDate(task.getCreationDate())
+                    .title(task.getTitle())
+                    .content(task.getContent())
+                    .isCompleted(task.isCompleted())
+                    .build();
+        }
+    }
 }
 

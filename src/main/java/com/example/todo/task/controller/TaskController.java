@@ -1,8 +1,8 @@
 package com.example.todo.task.controller;
 
 import com.example.todo.common.dto.ResponseMessage;
+import com.example.todo.task.dto.RequestTask;
 import com.example.todo.task.dto.ResponseTask;
-import com.example.todo.task.entity.Task;
 import com.example.todo.task.service.TaskService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -10,7 +10,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/tasks")
@@ -19,29 +18,28 @@ public class TaskController {
     @Autowired
     private TaskService taskService;
 
-    @PostMapping("")
-    public ResponseEntity<ResponseMessage> createTask(@RequestBody Task task) {
-        ResponseTask createdTask = taskService.createTask(task);
+    @PostMapping("/create")
+    public ResponseEntity<ResponseMessage> createTask(@RequestBody RequestTask.CreateTaskDto requestDto) {
+        taskService.createTask(requestDto);
         ResponseMessage responseMessage = ResponseMessage.builder()
                 .message("Task created successfully")
-                .data(createdTask)
                 .build();
         return ResponseEntity.status(HttpStatus.CREATED).body(responseMessage);
     }
 
-    @GetMapping("")
-    public ResponseEntity<ResponseMessage> getTasks() {
-        List<ResponseTask> tasks = taskService.getTasks();
+    @GetMapping("/get")
+    public ResponseEntity<ResponseMessage> getAllTask() {
+        List<ResponseTask.GetAllTaskDto> task = taskService.getAllTask();
         ResponseMessage responseMessage = ResponseMessage.builder()
                 .message("Tasks retrieved successfully")
-                .data(tasks)
+                .data(task)
                 .build();
         return ResponseEntity.status(HttpStatus.OK).body(responseMessage);
     }
 
-    @GetMapping("/{id}")
-    public ResponseEntity<ResponseMessage> getTaskById(@PathVariable("id") Long id) {
-        Optional<ResponseTask> task = taskService.getTaskById(id);
+    @GetMapping("/get/{id}")
+    public ResponseEntity<ResponseMessage> getTask(@PathVariable("id") Long id) {
+        ResponseTask.GetTaskDto task = taskService.getTask(id);
         ResponseMessage responseMessage = ResponseMessage.builder()
                 .message("Task retrieved successfully")
                 .data(task)
@@ -49,29 +47,31 @@ public class TaskController {
         return ResponseEntity.status(HttpStatus.OK).body(responseMessage);
     }
 
-    @PutMapping("/{id}")
-    public ResponseEntity<ResponseMessage> updateTask(@PathVariable("id") Long id, @RequestBody Task task) {
-        Optional<ResponseTask> updatedTask = taskService.updateTask(id, task);
+    @PutMapping("/update")
+    public ResponseEntity<ResponseMessage> updateTask(@RequestBody RequestTask.UpdateTaskDto requestDto) {
+        taskService.updateTask(requestDto);
         ResponseMessage responseMessage = ResponseMessage.builder()
                 .message("Task updated successfully")
-                .data(updatedTask)
                 .build();
         return ResponseEntity.status(HttpStatus.OK).body(responseMessage);
     }
 
-    @DeleteMapping("/{id}")
+    @PutMapping("/complete")
+    public ResponseEntity<ResponseMessage> completeTask(@RequestBody RequestTask.CompleteTaskDto requestDto) {
+        taskService.completeTask(requestDto);
+        ResponseMessage responseMessage = ResponseMessage.builder()
+                .message("Task completed successfully")
+                .build();
+        return ResponseEntity.status(HttpStatus.OK).body(responseMessage);
+    }
+
+    @DeleteMapping("/delete/{id}")
     public ResponseEntity<ResponseMessage> deleteTask(@PathVariable("id") Long id) {
-        boolean isDeleted = taskService.deleteTask(id);
-        if (isDeleted) {
-            ResponseMessage responseMessage = ResponseMessage.builder()
-                    .message("Task deleted successfully")
-                    .build();
-            return ResponseEntity.status(HttpStatus.OK).body(responseMessage);
-        } else {
-            ResponseMessage responseMessage = ResponseMessage.builder()
-                    .message("Task not found")
-                    .build();
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(responseMessage);
-        }
+        taskService.deleteTask(id);
+        ResponseMessage responseMessage = ResponseMessage.builder()
+                .message("Task deleted successfully")
+                .build();
+        return ResponseEntity.status(HttpStatus.OK).body(responseMessage);
+
     }
 }

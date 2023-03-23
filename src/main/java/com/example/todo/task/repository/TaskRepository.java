@@ -8,7 +8,8 @@ import java.util.List;
 import java.util.Optional;
 
 public interface TaskRepository extends JpaRepository<Task, Long> {
-    List<Task> findByTaskOrderGreaterThanEqual(Long taskOrder);
-    @Query("SELECT MAX(t.taskOrder) FROM Task t")
-    Optional<Long> findMaxTaskOrder();
+//    List<Task> findByTaskOrderGreaterThanEqual(Long taskOrder);
+//    @Query("SELECT MAX(t.taskOrder) FROM Task t")
+//    Optional<Long> findMaxTaskOrder();
+
 }
