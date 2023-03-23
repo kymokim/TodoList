@@ -8,7 +8,8 @@ public enum ErrorCode {
     AUTHENTICATION_CONFLICT(HttpStatus.CONFLICT,"AUTH__009"," AUTHENTICATION_CONFLICT."),
     AUTHENTICATION_FAILED(HttpStatus.UNAUTHORIZED,"AUTH__001"," LOGIN_FAILED"),
     NOT_FOUND_USER(HttpStatus.NOT_FOUND,"USER_001","NOT_FOUND_USER"),
-    LOGIN_FAILED(HttpStatus.NOT_FOUND,"AUTH_002","LOGIN_FAILED.");
+    LOGIN_FAILED(HttpStatus.NOT_FOUND,"AUTH_002","LOGIN_FAILED."),
+    NOT_FOUND_TASK(HttpStatus.NOT_FOUND,"TASK_001","NOT_FOUND_TASK");
     private final HttpStatus httpStatus;
     private final String code;
     private final String message;

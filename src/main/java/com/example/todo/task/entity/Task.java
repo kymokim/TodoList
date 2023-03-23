@@ -25,7 +25,7 @@ public class Task {
     private boolean isCompleted = false;
 
     @Builder
-    public Task(String title, String content){
+    public Task(String title, String content){ // 얜 왜 필요함??
         this.title = title;
         this.content = content;
     }

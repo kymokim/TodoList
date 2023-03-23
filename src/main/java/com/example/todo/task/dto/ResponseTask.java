@@ -12,15 +12,15 @@ public class ResponseTask {
     @Builder
     @Getter
     public static class GetTaskDto{
-//        private Long id;
+        private Long id;
         private LocalDateTime creationDate;
         private String title;
         private String content;
         private boolean isCompleted;
 
-        public static GetTaskDto of(Task task){
+        public static GetTaskDto toDto(Task task){
             return GetTaskDto.builder()
-//                    .id(task.getId())
+                    .id(task.getId())
                     .creationDate(task.getCreationDate())
                     .title(task.getTitle())
                     .content(task.getContent())
@@ -38,7 +38,7 @@ public class ResponseTask {
         private String content;
         private boolean isCompleted;
 
-        public static GetAllTaskDto of(Task task){
+        public static GetAllTaskDto toDto(Task task){
             return GetAllTaskDto.builder()
                     .id(task.getId())
                     .creationDate(task.getCreationDate())
