@@ -4,6 +4,7 @@ import com.example.todo.common.exception.ErrorCode;
 import com.example.todo.common.exception.error.NotFoundTaskException;
 import com.example.todo.task.dto.RequestTask;
 import com.example.todo.task.dto.ResponseTask;
+import com.example.todo.task.entity.Task;
 import com.example.todo.task.repository.TaskRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -25,38 +26,45 @@ public class TaskService { // 오류 던지긴 하는데 안 날라옴
 
     public void createTask(RequestTask.CreateTaskDto createTaskDto){
 
-        taskRepository.save(RequestTask.CreateTaskDto.toEntity(createTaskDto));
+        Task task = RequestTask.CreateTaskDto.toEntity(createTaskDto);
+        taskRepository.save(task);
     }
 
     public List<ResponseTask.GetAllTaskDto> getAllTask(){
 
+        List<Task> tasks = taskRepository.findAll();
         List<ResponseTask.GetAllTaskDto> list = new ArrayList<>();
-        taskRepository.findAll().stream().forEach(task -> list.add(ResponseTask.GetAllTaskDto.toDto(task)));
+        tasks.stream().forEach(task -> list.add(ResponseTask.GetAllTaskDto.toDto(task)));
         return list;
     }
 
     public ResponseTask.GetTaskDto getTask(Long id){
 
-        if(taskRepository.findById(id).isEmpty()) { throw new NotFoundTaskException(); }
-        return ResponseTask.GetTaskDto.toDto(taskRepository.findById(id).get());
+        Task task = taskRepository.findById(id).get();
+        if(task == null) { throw new NotFoundTaskException(); }
+        return ResponseTask.GetTaskDto.toDto(task);
     }
 
     public void updateTask(RequestTask.UpdateTaskDto updateTaskDto) {
 
-        if(taskRepository.findById(updateTaskDto.getId()).isEmpty()) { throw new NotFoundTaskException(); }
-        taskRepository.save(RequestTask.UpdateTaskDto.toEntity(taskRepository.findById(updateTaskDto.getId()).get(), updateTaskDto));
+        Task originalTask = taskRepository.findById(updateTaskDto.getId()).get();
+        if(originalTask == null) { throw new NotFoundTaskException(); }
+        Task updatedTask = RequestTask.UpdateTaskDto.toEntity(originalTask, updateTaskDto);
+        taskRepository.save(updatedTask);
     }
 
     public void completeTask(RequestTask.CompleteTaskDto completeTaskDto) {
 
-        if(taskRepository.findById(completeTaskDto.getId()).isEmpty()){ throw new NotFoundTaskException(); }
-        taskRepository.save(RequestTask.CompleteTaskDto.toEntity(taskRepository.findById(completeTaskDto.getId()).get(), completeTaskDto));
+        Task originalTask = taskRepository.findById(completeTaskDto.getId()).get();
+        if(originalTask == null){ throw new NotFoundTaskException(); }
+        Task completedTask = RequestTask.CompleteTaskDto.toEntity(originalTask, completeTaskDto);
+        taskRepository.save(completedTask);
     }
 
     public void deleteTask(Long id) {
 
-        if(taskRepository.findById(id).isEmpty()) { throw new NotFoundTaskException(); }
-        taskRepository.delete(taskRepository.findById(id).get());
+        Task task = taskRepository.findById(id).get();
+        if(task == null) { throw new NotFoundTaskException(); }
+        taskRepository.delete(task);
     }
-
 }
