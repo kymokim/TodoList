@@ -31,47 +31,37 @@ public class AuthService implements AuthServiceInterface {
 
     @Transactional
     @Override
-    public void register(RequestAuth.register registerDto) {
-        Auth user = authRepository.findByEmail(registerDto.getEmail());
+    public void registerUser(RequestAuth.RegisterUserDto registerUserDto) {
+
+        Auth user = authRepository.findByEmail(registerUserDto.getEmail());
         if(user != null){
             throw new RegisterFailedException();
         }
-
-        user = authRepository.findByUsername(registerDto.getUsername());
+        user = authRepository.findByUsername(registerUserDto.getUsername());
         if(user != null){
             throw new RegisterFailedException();
         }
 
         String salt = SHA256Util.generateSalt();
-
-        String encryptedPassword = SHA256Util.getEncrypt(registerDto.getPassword(),salt);
-
-        user = Auth.builder()
-                .email(registerDto.getEmail())
-                .password(encryptedPassword)
-                .username(registerDto.getUsername())
-                .salt(salt)
-                .build();
+        String encryptedPassword = SHA256Util.getEncrypt(registerUserDto.getPassword(),salt);
+        user = RequestAuth.RegisterUserDto.toEntity(registerUserDto, salt, encryptedPassword);
         authRepository.save(user);
     }
 
     @Override
     @Transactional
-    public Optional<ResponseAuth.login> login(RequestAuth.login loginDto) {
-        Auth user = authRepository.findByEmail(loginDto.getEmail());
+    public Optional<ResponseAuth.LoginUserRsDto> loginUser(RequestAuth.LoginUserRqDto loginUserRqDto) {
+        Auth user = authRepository.findByEmail(loginUserRqDto.getEmail());
         if(user == null)
             throw new LoginFailedException();
 
         String salt = user.getSalt();
-        user = authRepository.findByEmailAndPassword(loginDto.getEmail(), SHA256Util.getEncrypt(loginDto.getPassword(),salt));
+        user = authRepository.findByEmailAndPassword(loginUserRqDto.getEmail(), SHA256Util.getEncrypt(loginUserRqDto.getPassword(),salt));
         if(user == null)
             throw new LoginFailedException();
 
-        ResponseAuth.login login = ResponseAuth.login.builder()
-                .accessToken(createAccessToken(user.getEmail()))
-                .build();
-
-        return Optional.ofNullable(login);
+        String accessToken = createAccessToken(user.getEmail());
+        return Optional.ofNullable(ResponseAuth.LoginUserRsDto.toDto(accessToken));
     }
 
     @Override
@@ -83,29 +73,40 @@ public class AuthService implements AuthServiceInterface {
 
     @Override
     @Transactional
-    public void update(String email, RequestAuth.update updateDto) {
-        Auth user = authRepository.findByEmail(email);
-        if(user == null)
+    public void updateUser(Optional<String> token, RequestAuth.UpdateUserDto updateUserDto) {
+
+        String email = null;
+        if (token.isPresent()) {
+            JwtAuthToken jwtAuthToken = jwtAuthTokenProvider.convertAuthToken(token.get());
+            email = jwtAuthToken.getClaims().getSubject();
+        }
+
+        Auth originalUser = authRepository.findByEmail(email);
+        if(originalUser == null)
             throw new NotFoundUserException();
-        Auth user1 = authRepository.findByUsername(updateDto.getUsername());
-        if(user1 != null && !user.equals(user1))
+        Auth nameUser = authRepository.findByUsername(updateUserDto.getUsername());
+        if(nameUser != null && !originalUser.equals(nameUser))
             throw new RegisterFailedException();
 
         String salt = SHA256Util.generateSalt();
-        String encryptedPassword = SHA256Util.getEncrypt(updateDto.getPassword(), salt);
-        user.update(encryptedPassword,updateDto.getUsername(),salt);
+        String encryptedPassword = SHA256Util.getEncrypt(updateUserDto.getPassword(), salt);
+        Auth updatedUser = RequestAuth.UpdateUserDto.toEntity(originalUser, updateUserDto, salt, encryptedPassword);
+        authRepository.save(updatedUser);
     }
 
     @Override
     @Transactional
-    public ResponseAuth.info getUserInfo(String email) {
+    public ResponseAuth.GetUserDto getUser(Optional<String> token) {
+
+        String email = null;
+        if(token.isPresent()){
+            JwtAuthToken jwtAuthToken = jwtAuthTokenProvider.convertAuthToken(token.get());
+            email = jwtAuthToken.getClaims().getSubject();
+        }
         Auth user = authRepository.findByEmail(email);
         if (user == null)
             throw new NotFoundUserException();
-        ResponseAuth.info response = ResponseAuth.info.builder()
-                .email(user.getEmail())
-                .username(user.getUsername())
-                .build();
-        return response;
+
+        return ResponseAuth.GetUserDto.toDto(user);
     }
 }

@@ -22,27 +22,27 @@ public class TaskController {
     public ResponseEntity<ResponseMessage> createTask(@RequestBody RequestTask.CreateTaskDto requestDto) {
         taskService.createTask(requestDto);
         ResponseMessage responseMessage = ResponseMessage.builder()
-                .message("Task created successfully")
+                .message("Task created successfully.")
                 .build();
         return ResponseEntity.status(HttpStatus.CREATED).body(responseMessage);
     }
 
     @GetMapping("/get")
     public ResponseEntity<ResponseMessage> getAllTask() {
-        List<ResponseTask.GetAllTaskDto> task = taskService.getAllTask();
+        List<ResponseTask.GetAllTaskDto> response = taskService.getAllTask();
         ResponseMessage responseMessage = ResponseMessage.builder()
-                .message("Tasks retrieved successfully")
-                .data(task)
+                .message("Tasks retrieved successfully.")
+                .data(response)
                 .build();
         return ResponseEntity.status(HttpStatus.OK).body(responseMessage);
     }
 
     @GetMapping("/get/{id}")
     public ResponseEntity<ResponseMessage> getTask(@PathVariable("id") Long id) {
-        ResponseTask.GetTaskDto task = taskService.getTask(id);
+        ResponseTask.GetTaskDto response = taskService.getTask(id);
         ResponseMessage responseMessage = ResponseMessage.builder()
-                .message("Task retrieved successfully")
-                .data(task)
+                .message("Task retrieved successfully.")
+                .data(response)
                 .build();
         return ResponseEntity.status(HttpStatus.OK).body(responseMessage);
     }
@@ -51,7 +51,7 @@ public class TaskController {
     public ResponseEntity<ResponseMessage> updateTask(@RequestBody RequestTask.UpdateTaskDto requestDto) {
         taskService.updateTask(requestDto);
         ResponseMessage responseMessage = ResponseMessage.builder()
-                .message("Task updated successfully")
+                .message("Task updated successfully.")
                 .build();
         return ResponseEntity.status(HttpStatus.OK).body(responseMessage);
     }
@@ -60,7 +60,7 @@ public class TaskController {
     public ResponseEntity<ResponseMessage> completeTask(@RequestBody RequestTask.CompleteTaskDto requestDto) {
         taskService.completeTask(requestDto);
         ResponseMessage responseMessage = ResponseMessage.builder()
-                .message("Task completed successfully")
+                .message("Task completed successfully.")
                 .build();
         return ResponseEntity.status(HttpStatus.OK).body(responseMessage);
     }
@@ -69,7 +69,7 @@ public class TaskController {
     public ResponseEntity<ResponseMessage> deleteTask(@PathVariable("id") Long id) {
         taskService.deleteTask(id);
         ResponseMessage responseMessage = ResponseMessage.builder()
-                .message("Task deleted successfully")
+                .message("Task deleted successfully.")
                 .build();
         return ResponseEntity.status(HttpStatus.OK).body(responseMessage);
 

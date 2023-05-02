@@ -6,15 +6,15 @@ import com.example.todo.auth.dto.ResponseAuth;
 import java.util.Optional;
 
 public interface AuthServiceInterface {
-    void register(RequestAuth.register registerDto);
+    void registerUser(RequestAuth.RegisterUserDto registerUserDto);
 
-    Optional<ResponseAuth.login> login(RequestAuth.login loginDto);
+    Optional<ResponseAuth.LoginUserRsDto> loginUser(RequestAuth.LoginUserRqDto loginUserDto);
 
     String createAccessToken(String userid);
 
-    void update(String email, RequestAuth.update updateDto);
+    void updateUser(Optional<String> token, RequestAuth.UpdateUserDto updateUserDto);
 
-    ResponseAuth.info getUserInfo(String email);
+    ResponseAuth.GetUserDto getUser(Optional<String> token);
 
     //String createRefreshToken(String userid);
     //Optional<ResponseAuth.Token> updateAccessToken(String token);

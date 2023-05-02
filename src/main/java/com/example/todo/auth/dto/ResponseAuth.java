@@ -1,19 +1,33 @@
 package com.example.todo.auth.dto;
 
+import com.example.todo.auth.domain.Auth;
 import lombok.Builder;
 import lombok.Data;
 
 public class ResponseAuth {
     @Data
     @Builder
-    public static class login{
+    public static class LoginUserRsDto{
         private String accessToken;
+
+        public static LoginUserRsDto toDto(String accessToken){
+            return LoginUserRsDto.builder()
+                    .accessToken(accessToken)
+                    .build();
+        }
     }
 
     @Data
     @Builder
-    public static class info{
+    public static class GetUserDto{
         private String email;
         private String username;
+
+        public static GetUserDto toDto(Auth user){
+            return GetUserDto.builder()
+                    .email(user.getEmail())
+                    .username(user.getUsername())
+                    .build();
+        }
     }
 }
